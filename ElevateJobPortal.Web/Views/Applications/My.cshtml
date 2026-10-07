@@ -1,0 +1,28 @@
+@model IReadOnlyList<JobApplication>
+@{ ViewData["Title"] = "My applications"; }
+
+<h1 class="h3 mb-3">My applications</h1>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-light border">You have not applied to any jobs yet. <a asp-controller="Jobs" asp-action="Index">Browse jobs</a>.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Job</th><th>Company</th><th>Applied</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var a in Model)
+            {
+                <tr>
+                    <td><a asp-controller="Jobs" asp-action="Details" asp-route-id="@a.JobId">@a.Job?.Title</a></td>
+                    <td>@a.Job?.Company?.Name</td>
+                    <td>@a.CreatedAt.ToString("dd MMM yyyy")</td>
+                    <td><span class="badge status-@a.Status.ToString().ToLower()">@a.Status.ToDisplay()</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

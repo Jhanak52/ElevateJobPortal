@@ -1,0 +1,48 @@
+@model JobDetailsViewModel
+@{ ViewData["Title"] = Model.Job.Title; }
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <a asp-action="Index" class="small">&larr; All jobs</a>
+        <h1 class="h2 mt-2">@Model.Job.Title</h1>
+        <p class="text-muted">@Model.Job.Company?.Name &middot; @Model.Job.Location</p>
+        <div class="mb-3">
+            <span class="badge badge-type">@Model.Job.Type.ToDisplay()</span>
+            @if (Model.Job.IsExpired) { <span class="badge bg-danger">Closed</span> }
+        </div>
+        <h2 class="h5">About the role</h2>
+        <p class="job-description">@Model.Job.Description</p>
+    </div>
+    <div class="col-lg-4">
+        <div class="card form-card"><div class="card-body">
+            <dl class="mb-3">
+                <dt>Salary</dt><dd>@Model.Job.SalaryRange</dd>
+                <dt>Apply by</dt><dd>@Model.Job.Deadline.ToString("dd MMMM yyyy")</dd>
+                <dt>Posted</dt><dd>@Model.Job.CreatedAt.ToString("dd MMM yyyy")</dd>
+            </dl>
+
+            @if (Model.IsOwner)
+            {
+                <a class="btn btn-outline-primary w-100 mb-2" asp-action="Edit" asp-route-id="@Model.Job.Id">Edit job</a>
+                <a class="btn btn-outline-danger w-100 mb-2" asp-action="Delete" asp-route-id="@Model.Job.Id">Delete job</a>
+                <a class="btn btn-primary w-100" asp-controller="Dashboard" asp-action="Applications" asp-route-jobId="@Model.Job.Id">View applicants</a>
+            }
+            else if (Model.HasApplied)
+            {
+                <div class="alert alert-success mb-0">You have applied to this job.</div>
+            }
+            else if (Model.CanApply)
+            {
+                <a class="btn btn-accent w-100" asp-controller="Applications" asp-action="Apply" asp-route-jobId="@Model.Job.Id">Apply now</a>
+            }
+            else if (Model.Job.IsExpired)
+            {
+                <div class="alert alert-secondary mb-0">Applications for this job are closed.</div>
+            }
+            else if (User.Identity?.IsAuthenticated != true)
+            {
+                <a class="btn btn-primary w-100" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">Log in to apply</a>
+            }
+        </div></div>
+    </div>
+</div>

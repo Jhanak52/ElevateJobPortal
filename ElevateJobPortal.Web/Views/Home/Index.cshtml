@@ -1,0 +1,37 @@
+@model IReadOnlyList<Job>
+@{ ViewData["Title"] = "Home"; }
+
+<section class="hero mb-5">
+    <h1>Find work that moves Nepal forward.</h1>
+    <p class="lead">Elevate Workforce Solutions connects job seekers and employers with equal opportunity, clear listings and no hidden steps.</p>
+    <form asp-controller="Jobs" asp-action="Index" method="get" class="row g-2 hero-search">
+        <div class="col-md-5"><input name="search" class="form-control form-control-lg" placeholder="Job title or company" /></div>
+        <div class="col-md-4"><input name="location" class="form-control form-control-lg" placeholder="Location, e.g. Pokhara" /></div>
+        <div class="col-md-3 d-grid"><button class="btn btn-accent btn-lg" type="submit">Search jobs</button></div>
+    </form>
+</section>
+
+<div class="d-flex justify-content-between align-items-end mb-3">
+    <h2 class="h4 mb-0">Latest openings</h2>
+    <a asp-controller="Jobs" asp-action="Index">See all jobs</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <p class="text-muted">No jobs have been posted yet.</p>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var job in Model)
+        {
+            <div class="col-md-6 col-lg-4"><partial name="_JobCard" model="job" /></div>
+        }
+    </div>
+}
+
+<section class="row g-4 mt-5">
+    <div class="col-md-4"><h3 class="h5">Job seekers</h3><p class="text-muted">Create a free account, browse every opening and apply with a short cover letter. Track each application's status in one place.</p></div>
+    <div class="col-md-4"><h3 class="h5">Employers</h3><p class="text-muted">Register your company, post and manage your own openings, and review applicants from your dashboard.</p></div>
+    <div class="col-md-4"><h3 class="h5">Fair by design</h3><p class="text-muted">Every listing shows its salary range and deadline, so candidates can decide with full information.</p></div>
+</section>

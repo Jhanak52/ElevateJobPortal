@@ -1,0 +1,44 @@
+@model JobListViewModel
+@{ ViewData["Title"] = "Browse jobs"; }
+
+<h1 class="h3 mb-3">Browse jobs</h1>
+
+<form asp-action="Index" method="get" class="row g-2 mb-4">
+    <div class="col-md-4"><input name="search" value="@Model.Search" class="form-control" placeholder="Job title or company" /></div>
+    <div class="col-md-3"><input name="location" value="@Model.Location" class="form-control" placeholder="Location" /></div>
+    <div class="col-md-3">
+        <select name="type" class="form-select">
+            <option value="">All job types</option>
+            @foreach (var t in Enum.GetValues<JobType>())
+            {
+                <option value="@t" selected="@(Model.Type == t)">@t.ToDisplay()</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2 d-grid"><button class="btn btn-primary" type="submit">Search</button></div>
+</form>
+
+<p class="text-muted">@Model.Jobs.TotalCount job(s) found &middot; page @Model.Jobs.PageIndex of @Math.Max(1, Model.Jobs.TotalPages)</p>
+
+@if (Model.Jobs.Items.Count == 0)
+{
+    <div class="alert alert-light border">No jobs match your search.</div>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        @foreach (var job in Model.Jobs.Items)
+        {
+            <div class="col-md-6 col-lg-4"><partial name="_JobCard" model="job" /></div>
+        }
+    </div>
+
+    var routeValues = new Dictionary<string, string?>
+    {
+        ["search"] = Model.Search,
+        ["location"] = Model.Location,
+        ["type"] = Model.Type?.ToString()
+    };
+    var pager = new PagerViewModel(Model.Jobs.PageIndex, Model.Jobs.TotalPages, "Index", "Jobs", routeValues);
+    <partial name="_Pager" model="pager" />
+}

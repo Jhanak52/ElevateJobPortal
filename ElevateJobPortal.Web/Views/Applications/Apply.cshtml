@@ -1,0 +1,29 @@
+@model ApplyViewModel
+@{ ViewData["Title"] = "Apply"; }
+
+<div class="row justify-content-center"><div class="col-lg-7">
+    <div class="card form-card"><div class="card-body p-4">
+        <h1 class="h3">Apply for @Model.JobTitle</h1>
+        <p class="text-muted">@Model.CompanyName</p>
+        <form asp-action="Apply" method="post" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="JobId" />
+            <input type="hidden" asp-for="JobTitle" />
+            <input type="hidden" asp-for="CompanyName" />
+            <div class="mb-3">
+                <label asp-for="CoverLetter" class="form-label"></label>
+                <textarea asp-for="CoverLetter" class="form-control" rows="8"></textarea>
+                <span asp-validation-for="CoverLetter" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="PortfolioUrl" class="form-label"></label>
+                <input asp-for="PortfolioUrl" class="form-control" placeholder="https://" />
+                <span asp-validation-for="PortfolioUrl" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-accent">Submit application</button>
+            <a class="btn btn-link" asp-controller="Jobs" asp-action="Details" asp-route-id="@Model.JobId">Cancel</a>
+        </form>
+    </div></div>
+</div></div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

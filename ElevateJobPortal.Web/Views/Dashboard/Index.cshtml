@@ -1,0 +1,76 @@
+@model DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+        <h1 class="h3 mb-0">@Model.Company.Name</h1>
+        <span class="text-muted">Company dashboard</span>
+    </div>
+    <a class="btn btn-accent" asp-controller="Jobs" asp-action="Create">Post a job</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3"><div class="stat"><div class="stat-value">@Model.Stats.TotalJobs</div><div class="stat-label">Jobs posted</div></div></div>
+    <div class="col-6 col-lg-3"><div class="stat"><div class="stat-value">@Model.Stats.ActiveJobs</div><div class="stat-label">Open for applications</div></div></div>
+    <div class="col-6 col-lg-3"><div class="stat"><div class="stat-value">@Model.Stats.TotalApplications</div><div class="stat-label">Applications received</div></div></div>
+    <div class="col-6 col-lg-3"><div class="stat"><div class="stat-value">@Model.Stats.PendingApplications</div><div class="stat-label">Awaiting review</div></div></div>
+</div>
+
+<h2 class="h5">Your jobs</h2>
+@if (Model.Jobs.Items.Count == 0)
+{
+    <div class="alert alert-light border">You have not posted any jobs yet.</div>
+}
+else
+{
+    <div class="table-responsive mb-3">
+        <table class="table align-middle">
+            <thead><tr><th>Title</th><th>Location</th><th>Deadline</th><th>Applicants</th><th class="text-end">Actions</th></tr></thead>
+            <tbody>
+            @foreach (var job in Model.Jobs.Items)
+            {
+                <tr>
+                    <td><a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.Id">@job.Title</a></td>
+                    <td>@job.Location</td>
+                    <td>@job.Deadline.ToString("dd MMM yyyy") @if (job.IsExpired) { <span class="badge bg-secondary">Closed</span> }</td>
+                    <td><a asp-action="Applications" asp-route-jobId="@job.Id">@job.Applications.Count</a></td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-controller="Jobs" asp-action="Edit" asp-route-id="@job.Id">Edit</a>
+                        <a class="btn btn-sm btn-outline-danger" asp-controller="Jobs" asp-action="Delete" asp-route-id="@job.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    var pager = new PagerViewModel(Model.Jobs.PageIndex, Model.Jobs.TotalPages, "Index", "Dashboard");
+    <partial name="_Pager" model="pager" />
+}
+
+<div class="d-flex justify-content-between align-items-end mt-5 mb-2">
+    <h2 class="h5 mb-0">Recent applications</h2>
+    <a asp-action="Applications">View all</a>
+</div>
+@if (Model.RecentApplications.Count == 0)
+{
+    <div class="alert alert-light border">No applications yet.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Applicant</th><th>Job</th><th>Applied</th><th>Status</th></tr></thead>
+            <tbody>
+            @foreach (var a in Model.RecentApplications)
+            {
+                <tr>
+                    <td>@a.Applicant?.FullName<br /><span class="text-muted small">@a.Applicant?.Email</span></td>
+                    <td>@a.Job?.Title</td>
+                    <td>@a.CreatedAt.ToString("dd MMM yyyy")</td>
+                    <td><span class="badge status-@a.Status.ToString().ToLower()">@a.Status.ToDisplay()</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
